@@ -1,11 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="se.kjellstrand.ccc.watch">
     <uses-feature android:name="android.hardware.type.watch" />
+
+    <uses-permission
+        android:name="com.google.android.permission.PROVIDE_BACKGROUND" />
+    <uses-permission
+        android:name="android.permission.WAKE_LOCK" />
+
     <application android:allowBackup="true" android:label="@string/app_name"
         android:icon="@drawable/ic_launcher" android:theme="@android:style/Theme.DeviceDefault">
 
         <service
-            android:name=".AnalogWatchFaceService"
+            android:name=".CCCWatchFaceService"
             android:label="@string/analog_name"
             android:allowEmbedded="true"
             android:taskAffinity=""

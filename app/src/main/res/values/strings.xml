@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CCC Watch face</string>
+    <string name="analog_name">Decimal</string>
 </resources>
