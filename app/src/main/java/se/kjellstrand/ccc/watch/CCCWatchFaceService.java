@@ -55,18 +55,6 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
         private boolean registeredTimeZoneReceiver;
 
-        /* graphic objects */
-//        private Bitmap backgroundBitmap;
-//        private Bitmap backgroundScaledBitmap;
-//        private BitmapDrawable tickPaint;
-//        private Paint hourPrimaryPaint;
-//        private Paint hourSecondaryPaint;
-//        private Paint minutePrimaryPaint;
-//        private Paint minuteSecondaryPaint;
-//        private Paint secondPrimaryPaint;
-//        private Paint secondSecondaryPaint;
-//
-
         /**
          * Defines how the colors will be blended.
          */
@@ -122,7 +110,7 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_SHORT)
                     .setBackgroundVisibility(WatchFaceStyle
                             .BACKGROUND_VISIBILITY_INTERRUPTIVE)
-                    .setShowSystemUiTime(false)
+                    .setShowSystemUiTime(true)
                     .build());
 
             /* load the background image */
@@ -245,7 +233,7 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             // For boxes without a color, set the default background color.
             for (int i = 0; i <= 9; i++) {
                 if (DIGITS_COLOR[i] == 0) {
-                    DIGITS_COLOR[i] = 0x000000;
+                    DIGITS_COLOR[i] = 0xff222222;
                 }
             }
 
@@ -256,6 +244,7 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
             Paint paintText = new Paint();
             paintText.setTextSize(20);
+            paintText.setAntiAlias(true);
             paint.setColor(Color.CYAN);
             float faceRadius=(centerX+centerY)/2.75f;
             float radius = faceRadius/4;
