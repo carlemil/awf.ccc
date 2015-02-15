@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -17,6 +18,7 @@ import android.os.Message;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.util.TimeZone;
@@ -38,6 +40,13 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
         static final int MSG_UPDATE_TIME = 0;
         static final int INTERACTIVE_UPDATE_RATE_MS = 1000;
 
+
+        /**
+         * Holds the current colors of each digit, used while calculating the color
+         * state of the clock in each update.
+         */
+        private final int[] DIGITS_COLOR = new int[10];
+
         /* a time object */
         private Time time;
 
@@ -50,9 +59,19 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 //        private Bitmap backgroundBitmap;
 //        private Bitmap backgroundScaledBitmap;
 //        private BitmapDrawable tickPaint;
-        private Paint hourPaint;
-        private Paint minutePaint;
-        private Paint secondPaint;
+//        private Paint hourPrimaryPaint;
+//        private Paint hourSecondaryPaint;
+//        private Paint minutePrimaryPaint;
+//        private Paint minuteSecondaryPaint;
+//        private Paint secondPrimaryPaint;
+//        private Paint secondSecondaryPaint;
+//
+
+        /**
+         * Defines how the colors will be blended.
+         */
+        private int sBlendMode = R.string.screen_blend;
+
 
         private boolean burnInProtection;
 
@@ -113,22 +132,22 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 //            backgroundBitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
 
             /* create graphic styles */
-            hourPaint = new Paint();
-            hourPaint.setARGB(255, 200, 000, 000);
-            hourPaint.setStrokeWidth(5.0f);
-            hourPaint.setAntiAlias(true);
-            hourPaint.setStrokeCap(Paint.Cap.ROUND);
-            minutePaint = new Paint();
-            minutePaint.setARGB(255, 000, 200, 000);
-            minutePaint.setStrokeWidth(5.0f);
-            minutePaint.setAntiAlias(true);
-            minutePaint.setStrokeCap(Paint.Cap.ROUND);
-            secondPaint = new Paint();
-            secondPaint.setARGB(255, 000, 000, 200);
-            secondPaint.setStrokeWidth(5.0f);
-            secondPaint.setAntiAlias(true);
-            secondPaint.setStrokeCap(Paint.Cap.ROUND);
-
+//            hourPrimaryPaint = new Paint();
+//            hourPrimaryPaint.setARGB(255, 200, 000, 000);
+//            hourPrimaryPaint.setStrokeWidth(5.0f);
+//            hourPrimaryPaint.setAntiAlias(true);
+//            hourPrimaryPaint.setStrokeCap(Paint.Cap.ROUND);
+//            minutePrimaryPaint = new Paint();
+//            minutePrimaryPaint.setARGB(255, 000, 200, 000);
+//            minutePrimaryPaint.setStrokeWidth(5.0f);
+//            minutePrimaryPaint.setAntiAlias(true);
+//            minutePrimaryPaint.setStrokeCap(Paint.Cap.ROUND);
+//            secondPrimaryPaint = new Paint();
+//            secondPrimaryPaint.setARGB(255, 000, 000, 200);
+//            secondPrimaryPaint.setStrokeWidth(5.0f);
+//            secondPrimaryPaint.setAntiAlias(true);
+//            secondPaint.setStrokeCap(Paint.Cap.ROUND);
+//
 
             /* allocate an object to hold the time */
             time = new Time();
@@ -158,10 +177,11 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
             if (lowBitAmbient) {
                 boolean antiAlias = !inAmbientMode;
-                hourPaint.setAntiAlias(antiAlias);
-                minutePaint.setAntiAlias(antiAlias);
-                secondPaint.setAntiAlias(antiAlias);
+//                hourPaint.setAntiAlias(antiAlias);
+//                minutePaint.setAntiAlias(antiAlias);
+//                secondPaint.setAntiAlias(antiAlias);
 //                tickPaint.setAntiAlias(antiAlias);
+                //TODO what to do???
             }
             invalidate();
             updateTimer();
@@ -186,6 +206,8 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 //            }
 //            canvas.drawBitmap(backgroundScaledBitmap, 0, 0, null);
 
+            canvas.drawColor(Color.BLACK);
+
             // Find the center. Ignore the window insets so that, on round watches
             // with a "chin", the watch face is centered on the entire screen, not
             // just the usable portion.
@@ -198,35 +220,46 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             float minRot = minutes / 30f * (float) Math.PI;
             float hrRot = ((time.hour + (minutes / 60f)) / 6f ) * (float) Math.PI;
 
-            float secLength = centerX - 20;
-            float minLength = centerX - 40;
-            float hrLength = centerX - 80;
 
-            float secX = (float) Math.sin(secRot) * secLength;
-            float secY = (float) -Math.cos(secRot) * secLength;
-            canvas.drawLine(centerX, centerY, centerX + secX, centerY +
-                    secY, secondPaint);
+            // Find out what boxes are 'active'
+            int hoursX0 = time.hour / 10;
+            int hours0X = time.hour % 10;
+            int minutesX0 = time.minute / 10;
+            int minutes0X = time.minute % 10;
+            int secondsX0 = time.second / 10;
+            int seconds0X = time.second % 10;
 
-            // Draw the minute and hour hands.
-            float minX = (float) Math.sin(minRot) * minLength;
-            float minY = (float) -Math.cos(minRot) * minLength;
-            canvas.drawLine(centerX, centerY, centerX + minX, centerY + minY,
-                    minutePaint);
-            float hrX = (float) Math.sin(hrRot) * hrLength;
-            float hrY = (float) -Math.cos(hrRot) * hrLength;
-            canvas.drawLine(centerX, centerY, centerX + hrX, centerY + hrY,
-                    hourPaint);
+            // Reset all boxes to zero/black.
+            for (int i = 0; i <= 9; i++) {
+                DIGITS_COLOR[i] = 0;
+            }
+
+            // Update the color of the boxes with 'active' digits in them..
+            DIGITS_COLOR[hoursX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hoursX0], 0xffcc0000);
+            DIGITS_COLOR[hours0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hours0X], 0xffaa0000);
+            DIGITS_COLOR[minutesX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutesX0], 0xff00cc00);
+            DIGITS_COLOR[minutes0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutes0X], 0xff00aa00);
+            DIGITS_COLOR[secondsX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[secondsX0], 0xff0000cc);
+            DIGITS_COLOR[seconds0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[seconds0X], 0xff0000aa);
+
+            // For boxes without a color, set the default background color.
+            for (int i = 0; i <= 9; i++) {
+                if (DIGITS_COLOR[i] == 0) {
+                    DIGITS_COLOR[i] = 0x000000;
+                }
+            }
 
             Paint paint = new Paint();
-            paint.setARGB(255, 100, 250, 000);
-            paint.setStrokeWidth(5.0f);
+            //paint.setStrokeWidth(5.0f);
             paint.setAntiAlias(true);
             paint.setStrokeCap(Paint.Cap.ROUND);
             float faceRadius=(centerX+centerY)/2.75f;
             float radius = faceRadius/4;
             for (int i=0;i<10;i++){
-                float offsetX = (float) (Math.sin(i/10f*Math.PI * 2)*faceRadius);
-                float offsetY = (float) (Math.cos(i / 10f * Math.PI * 2)*faceRadius);
+                float offsetX = (float) (Math.sin(-i/10f*Math.PI * 2+Math.PI)*faceRadius);
+                float offsetY = (float) (Math.cos(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
+                Log.d("TAG", "color: " + DIGITS_COLOR[i]);
+                paint.setColor(DIGITS_COLOR[i]);
                 canvas.drawCircle(centerX+offsetX, centerY+offsetY, radius, paint);
             }
         }
@@ -249,6 +282,41 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             // Whether the timer should be running depends on whether we're visible and
             // whether we're in ambient mode), so we may need to start or stop the timer
             updateTimer();
+        }
+
+
+        /**
+         * Blends the two colors unless the first color is pitch black with 0 alpha,
+         * for that corner-case it will return the second color
+         *
+         * @param c1 first color.
+         * @param c2 second color.
+         * @return a blend of the two color, unless above stated condition applies.
+         */
+        private int setOrBlendDigitColorWithColor(int c1, int c2) {
+            switch (sBlendMode) {
+                case R.string.screen_blend:
+                    if (c1 != 0) {
+                        return ColorUtil.screenBlendTwoColors(c1, c2);
+                    } else {
+                        return c2;
+                    }
+
+                case R.string.multiply_blend:
+                    if (c1 != 0) {
+                        return ColorUtil.multiplyBlendTwoColors(c1, c2);
+                    } else {
+                        return c2;
+                    }
+
+                case R.string.average_blend:
+                    if (c1 != 0) {
+                        return ColorUtil.averageBlendTwoColors(c1, c2);
+                    } else {
+                        return c2;
+                    }
+            }
+            return c1;
         }
 
         private void registerReceiver() {
