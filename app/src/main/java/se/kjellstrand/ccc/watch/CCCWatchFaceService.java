@@ -236,11 +236,11 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
             // Update the color of the boxes with 'active' digits in them..
             DIGITS_COLOR[hoursX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hoursX0], 0xffcc0000);
-            DIGITS_COLOR[hours0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hours0X], 0xffaa0000);
+            DIGITS_COLOR[hours0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hours0X], 0xff770000);
             DIGITS_COLOR[minutesX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutesX0], 0xff00cc00);
-            DIGITS_COLOR[minutes0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutes0X], 0xff00aa00);
+            DIGITS_COLOR[minutes0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutes0X], 0xff007700);
             DIGITS_COLOR[secondsX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[secondsX0], 0xff0000cc);
-            DIGITS_COLOR[seconds0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[seconds0X], 0xff0000aa);
+            DIGITS_COLOR[seconds0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[seconds0X], 0xff000077);
 
             // For boxes without a color, set the default background color.
             for (int i = 0; i <= 9; i++) {
@@ -253,14 +253,18 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             //paint.setStrokeWidth(5.0f);
             paint.setAntiAlias(true);
             paint.setStrokeCap(Paint.Cap.ROUND);
+
+            Paint paintText = new Paint();
+            paintText.setTextSize(20);
+            paint.setColor(Color.CYAN);
             float faceRadius=(centerX+centerY)/2.75f;
             float radius = faceRadius/4;
             for (int i=0;i<10;i++){
                 float offsetX = (float) (Math.sin(-i/10f*Math.PI * 2+Math.PI)*faceRadius);
                 float offsetY = (float) (Math.cos(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
-                Log.d("TAG", "color: " + DIGITS_COLOR[i]);
                 paint.setColor(DIGITS_COLOR[i]);
                 canvas.drawCircle(centerX+offsetX, centerY+offsetY, radius, paint);
+                canvas.drawText(""+i,centerX+offsetX, centerY+offsetY, paintText);
             }
         }
 
