@@ -29,7 +29,6 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
         return new Engine();
     }
 
-    /* implement service callback methods */
     private class Engine extends CanvasWatchFaceService.Engine {
 
         static final int MSG_UPDATE_TIME = 0;
@@ -57,10 +56,12 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
 
         //private boolean burnInProtection;
+        private Paint paintCircles = new Paint();
 
-        Paint paintCircles = new Paint();
-        //paint.setStrokeWidth(5.0f);
-        Paint paintText = new Paint();
+        /* implement service callback methods */
+        private Paint paintOuterCircles = new Paint();
+
+        private Paint paintText = new Paint();
 
         /* handler to update the time once a second in interactive mode */
         final Handler mUpdateTimeHandler = new Handler() {
@@ -80,7 +81,6 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
                 }
             }
         };
-
         /* receiver to update the time zone */
         final BroadcastReceiver timeZoneReceiver = new BroadcastReceiver() {
             @Override
@@ -118,30 +118,16 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             paintCircles.setAntiAlias(true);
             paintText.setAntiAlias(true);
             paintText.setTextSize(20);
+            paintOuterCircles.setAntiAlias(true);
+            paintOuterCircles.setStrokeWidth(2.0f);
+            paintOuterCircles.setColor(0xffbbbbbb);
+            paintOuterCircles.setStyle(Paint.Style.STROKE);
 
             /* load the background image */
 //            Resources resources;
 //            resources = CCCWatchFaceService.this.getResources();
 //            Drawable backgroundDrawable = resources.getDrawable(R.drawable.close_button);
 //            backgroundBitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
-
-            /* create graphic styles */
-//            hourPrimaryPaint = new Paint();
-//            hourPrimaryPaint.setARGB(255, 200, 000, 000);
-//            hourPrimaryPaint.setStrokeWidth(5.0f);
-//            hourPrimaryPaint.setAntiAlias(true);
-//            hourPrimaryPaint.setStrokeCap(Paint.Cap.ROUND);
-//            minutePrimaryPaint = new Paint();
-//            minutePrimaryPaint.setARGB(255, 000, 200, 000);
-//            minutePrimaryPaint.setStrokeWidth(5.0f);
-//            minutePrimaryPaint.setAntiAlias(true);
-//            minutePrimaryPaint.setStrokeCap(Paint.Cap.ROUND);
-//            secondPrimaryPaint = new Paint();
-//            secondPrimaryPaint.setARGB(255, 000, 000, 200);
-//            secondPrimaryPaint.setStrokeWidth(5.0f);
-//            secondPrimaryPaint.setAntiAlias(true);
-//            secondPaint.setStrokeCap(Paint.Cap.ROUND);
-//
 
             /* allocate an object to hold the time */
             time = new Time();
@@ -173,6 +159,7 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
                 boolean antiAlias = !inAmbientMode;
                 paintCircles.setAntiAlias(antiAlias);
                 paintText.setAntiAlias(antiAlias);
+                paintOuterCircles.setAntiAlias(antiAlias);
             }
             invalidate();
             updateTimer();
@@ -192,8 +179,8 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             // Find the center. Ignore the window insets so that, on round watches
             // with a "chin", the watch face is centered on the entire screen, not
             // just the usable portion.
-            float centerX = width / 2f;
-            float centerY = height / 2f;
+            float centerScreenX = width / 2f;
+            float centerScreenY = height / 2f;
 
             // Find out what boxes are 'active'
             int hoursX0 = time.hour / 10;
@@ -225,20 +212,23 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
 
             paintCircles.setColor(Color.CYAN);
-            float faceRadius=(centerX+centerY)/2.75f;
+            float faceRadius=(centerScreenX+centerScreenY)/2.75f;
             float radius = faceRadius/4;
             for (int i=0;i<10;i++){
                 float offsetX = (float) (Math.sin(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
                 float offsetY = (float) (Math.cos(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
                 paintCircles.setColor(DIGITS_COLOR[i]);
-                canvas.drawCircle(centerX+offsetX, centerY+offsetY, radius, paintCircles);
+                float centerDigitX = centerScreenX+offsetX;
+                float centerDigitY = centerScreenY+offsetY;
+                canvas.drawCircle(centerDigitX, centerDigitY, radius, paintCircles);
+                canvas.drawOval(centerDigitX-radius,centerDigitY-radius,centerDigitX+radius,centerDigitY+radius, paintOuterCircles);
 
                 // Move to outside this method and make lookup array of chrBounds
                 String chr = ""+i;
                 paintText.getTextBounds(chr, 0, chr.length(), chrBounds);
 
-                float textOffsetX = centerX+offsetX - chrBounds.width()/2;
-                float textOffsetY = centerY+offsetY + chrBounds.height()/2;
+                float textOffsetX = centerScreenX+offsetX - chrBounds.width()/2;
+                float textOffsetY = centerScreenY+offsetY + chrBounds.height()/2;
                 canvas.drawText(chr,textOffsetX, textOffsetY, paintText);
             }
         }
