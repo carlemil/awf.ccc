@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -54,13 +56,8 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
          */
         private int sBlendMode = R.string.screen_blend;
 
-
-        //private boolean burnInProtection;
         private Paint paintCircles = new Paint();
-
-        /* implement service callback methods */
         private Paint paintOuterCircles = new Paint();
-
         private Paint paintText = new Paint();
 
         /* handler to update the time once a second in interactive mode */
@@ -110,14 +107,23 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_SHORT)
                     .setBackgroundVisibility(WatchFaceStyle
                             .BACKGROUND_VISIBILITY_INTERRUPTIVE)
-                    .setShowSystemUiTime(true)
+                    .setShowSystemUiTime(false)
                     .build());
 
-
-//            paintCircles.setStrokeCap(Cap.ROUND);
             paintCircles.setAntiAlias(true);
             paintText.setAntiAlias(true);
-            paintText.setTextSize(20);
+            paintText.setTextSize(46);
+
+            float mx[] = {
+                    -1.0f, 0.0f, 0.0f, 0.0f, 125.0f,
+                    0.0f, -1.0f, 0.0f, 0.0f, 125.0f,
+                    0.0f, 0.0f, -1.0f, 0.0f, 125.0f,
+                    0.0f, 0.0f, 0.0f, 1.0f, 0.0f
+            };
+            ColorMatrix cm = new ColorMatrix(mx);
+
+            paintText.setColorFilter(new ColorMatrixColorFilter(cm));
+
             paintOuterCircles.setAntiAlias(true);
             paintOuterCircles.setStrokeWidth(2.0f);
             paintOuterCircles.setColor(0xffbbbbbb);
@@ -212,24 +218,29 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
 
             paintCircles.setColor(Color.CYAN);
-            float faceRadius=(centerScreenX+centerScreenY)/2.75f;
-            float radius = faceRadius/4;
-            for (int i=0;i<10;i++){
-                float offsetX = (float) (Math.sin(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
-                float offsetY = (float) (Math.cos(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
+            float faceRadius = (centerScreenX + centerScreenY) / 2.8f;
+            float radius = faceRadius / 4;
+            for (int i = 0; i < 10; i++) {
                 paintCircles.setColor(DIGITS_COLOR[i]);
-                float centerDigitX = centerScreenX+offsetX;
-                float centerDigitY = centerScreenY+offsetY;
+                paintText.setColor(DIGITS_COLOR[i]);
+
+                float offsetX = (float) (Math.sin(-i / 10f * Math.PI * 2 + Math.PI) * faceRadius);
+                float offsetY = (float) (Math.cos(-i / 10f * Math.PI * 2 + Math.PI) * faceRadius);
+
+                float centerDigitX = centerScreenX + offsetX;
+                float centerDigitY = centerScreenY + offsetY;
+
                 canvas.drawCircle(centerDigitX, centerDigitY, radius, paintCircles);
-                canvas.drawOval(centerDigitX-radius,centerDigitY-radius,centerDigitX+radius,centerDigitY+radius, paintOuterCircles);
+                canvas.drawOval(centerDigitX - radius, centerDigitY - radius,
+                        centerDigitX + radius, centerDigitY + radius, paintOuterCircles);
 
                 // Move to outside this method and make lookup array of chrBounds
-                String chr = ""+i;
+                String chr = "" + i;
                 paintText.getTextBounds(chr, 0, chr.length(), chrBounds);
 
-                float textOffsetX = centerScreenX+offsetX - chrBounds.width()/2;
-                float textOffsetY = centerScreenY+offsetY + chrBounds.height()/2;
-                canvas.drawText(chr,textOffsetX, textOffsetY, paintText);
+                float textOffsetX = centerScreenX + offsetX - chrBounds.width() / 2;
+                float textOffsetY = centerScreenY + offsetY + chrBounds.height() / 2;
+                canvas.drawText(chr, textOffsetX, textOffsetY, paintText);
             }
         }
 
