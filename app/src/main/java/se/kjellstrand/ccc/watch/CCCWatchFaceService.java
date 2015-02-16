@@ -4,21 +4,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 import java.util.TimeZone;
@@ -61,7 +56,11 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
         private int sBlendMode = R.string.screen_blend;
 
 
-        private boolean burnInProtection;
+        //private boolean burnInProtection;
+
+        Paint paintCircles = new Paint();
+        //paint.setStrokeWidth(5.0f);
+        Paint paintText = new Paint();
 
         /* handler to update the time once a second in interactive mode */
         final Handler mUpdateTimeHandler = new Handler() {
@@ -90,6 +89,7 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
                 time.setToNow();
             }
         };
+        private Rect chrBounds = new Rect();
 
         private void updateTimer() {
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
@@ -112,6 +112,12 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
                             .BACKGROUND_VISIBILITY_INTERRUPTIVE)
                     .setShowSystemUiTime(true)
                     .build());
+
+
+//            paintCircles.setStrokeCap(Cap.ROUND);
+            paintCircles.setAntiAlias(true);
+            paintText.setAntiAlias(true);
+            paintText.setTextSize(20);
 
             /* load the background image */
 //            Resources resources;
@@ -146,8 +152,8 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             super.onPropertiesChanged(properties);
             /* get device features (burn-in, low-bit ambient) */
             lowBitAmbient = properties.getBoolean(PROPERTY_LOW_BIT_AMBIENT, false);
-            burnInProtection = properties.getBoolean(PROPERTY_BURN_IN_PROTECTION,
-                    false);
+//            burnInProtection = properties.getBoolean(PROPERTY_BURN_IN_PROTECTION,
+//                    false);
         }
 
         @Override
@@ -165,11 +171,8 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
             if (lowBitAmbient) {
                 boolean antiAlias = !inAmbientMode;
-//                hourPaint.setAntiAlias(antiAlias);
-//                minutePaint.setAntiAlias(antiAlias);
-//                secondPaint.setAntiAlias(antiAlias);
-//                tickPaint.setAntiAlias(antiAlias);
-                //TODO what to do???
+                paintCircles.setAntiAlias(antiAlias);
+                paintText.setAntiAlias(antiAlias);
             }
             invalidate();
             updateTimer();
@@ -177,22 +180,12 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
-
             /* draw your watch face */
             // Update the time
             time.setToNow();
 
             int width = bounds.width();
             int height = bounds.height();
-
-            // Draw the background, scaled to fit.
-//            if (backgroundScaledBitmap == null
-//                    || backgroundScaledBitmap.getWidth() != width
-//                    || backgroundScaledBitmap.getHeight() != height) {
-//                backgroundScaledBitmap = Bitmap.createScaledBitmap(backgroundBitmap,
-//                        width, height, true /* filter */);
-//            }
-//            canvas.drawBitmap(backgroundScaledBitmap, 0, 0, null);
 
             canvas.drawColor(Color.BLACK);
 
@@ -201,13 +194,6 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             // just the usable portion.
             float centerX = width / 2f;
             float centerY = height / 2f;
-
-            // Compute rotations and lengths for the clock hands.
-            float secRot = time.second / 30f * (float) Math.PI;
-            int minutes = time.minute;
-            float minRot = minutes / 30f * (float) Math.PI;
-            float hrRot = ((time.hour + (minutes / 60f)) / 6f ) * (float) Math.PI;
-
 
             // Find out what boxes are 'active'
             int hoursX0 = time.hour / 10;
@@ -237,23 +223,23 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
                 }
             }
 
-            Paint paint = new Paint();
-            //paint.setStrokeWidth(5.0f);
-            paint.setAntiAlias(true);
-            paint.setStrokeCap(Paint.Cap.ROUND);
 
-            Paint paintText = new Paint();
-            paintText.setTextSize(20);
-            paintText.setAntiAlias(true);
-            paint.setColor(Color.CYAN);
+            paintCircles.setColor(Color.CYAN);
             float faceRadius=(centerX+centerY)/2.75f;
             float radius = faceRadius/4;
             for (int i=0;i<10;i++){
-                float offsetX = (float) (Math.sin(-i/10f*Math.PI * 2+Math.PI)*faceRadius);
+                float offsetX = (float) (Math.sin(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
                 float offsetY = (float) (Math.cos(-i / 10f * Math.PI * 2+Math.PI)*faceRadius);
-                paint.setColor(DIGITS_COLOR[i]);
-                canvas.drawCircle(centerX+offsetX, centerY+offsetY, radius, paint);
-                canvas.drawText(""+i,centerX+offsetX, centerY+offsetY, paintText);
+                paintCircles.setColor(DIGITS_COLOR[i]);
+                canvas.drawCircle(centerX+offsetX, centerY+offsetY, radius, paintCircles);
+
+                // Move to outside this method and make lookup array of chrBounds
+                String chr = ""+i;
+                paintText.getTextBounds(chr, 0, chr.length(), chrBounds);
+
+                float textOffsetX = centerX+offsetX - chrBounds.width()/2;
+                float textOffsetY = centerY+offsetY + chrBounds.height()/2;
+                canvas.drawText(chr,textOffsetX, textOffsetY, paintText);
             }
         }
 
