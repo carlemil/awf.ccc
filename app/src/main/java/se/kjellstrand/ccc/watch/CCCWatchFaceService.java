@@ -36,6 +36,15 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
         static final int MSG_UPDATE_TIME = 0;
         static final int INTERACTIVE_UPDATE_RATE_MS = 1000;
 
+        public static final int HOUR_X0_COLOR = 0xffcc0000;
+        public static final int HOUR_0X_COLOR = 0xff770000;
+        public static final int MINUTE_X0_COLOR = 0xff00cc00;
+        public static final int MINUTE_0X_COLOR = 0xff007700;
+        public static final int SECOND_X0_COLOR = 0xff0000cc;
+        public static final int SECOND_0X_COLOR = 0xff000077;
+        public static final int TEXT_COLOR = 0xff222222;
+        public static final int OUTER_CIRCLE_COLOR = 0xffbbbbbb;
+
 
         /**
          * Holds the current colors of each digit, used while calculating the color
@@ -126,14 +135,8 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
             paintOuterCircles.setAntiAlias(true);
             paintOuterCircles.setStrokeWidth(2.0f);
-            paintOuterCircles.setColor(0xffbbbbbb);
+            paintOuterCircles.setColor(OUTER_CIRCLE_COLOR);
             paintOuterCircles.setStyle(Paint.Style.STROKE);
-
-            /* load the background image */
-//            Resources resources;
-//            resources = CCCWatchFaceService.this.getResources();
-//            Drawable backgroundDrawable = resources.getDrawable(R.drawable.close_button);
-//            backgroundBitmap = ((BitmapDrawable) backgroundDrawable).getBitmap();
 
             /* allocate an object to hold the time */
             time = new Time();
@@ -202,24 +205,24 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             }
 
             // Update the color of the boxes with 'active' digits in them..
-            DIGITS_COLOR[hoursX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hoursX0], 0xffcc0000);
-            DIGITS_COLOR[hours0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hours0X], 0xff770000);
-            DIGITS_COLOR[minutesX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutesX0], 0xff00cc00);
-            DIGITS_COLOR[minutes0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutes0X], 0xff007700);
-            DIGITS_COLOR[secondsX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[secondsX0], 0xff0000cc);
-            DIGITS_COLOR[seconds0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[seconds0X], 0xff000077);
+            DIGITS_COLOR[hoursX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hoursX0], HOUR_X0_COLOR);
+            DIGITS_COLOR[hours0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[hours0X], HOUR_0X_COLOR);
+            DIGITS_COLOR[minutesX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutesX0], MINUTE_X0_COLOR);
+            DIGITS_COLOR[minutes0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[minutes0X], MINUTE_0X_COLOR);
+            DIGITS_COLOR[secondsX0] = setOrBlendDigitColorWithColor(DIGITS_COLOR[secondsX0], SECOND_X0_COLOR);
+            DIGITS_COLOR[seconds0X] = setOrBlendDigitColorWithColor(DIGITS_COLOR[seconds0X], SECOND_0X_COLOR);
 
             // For boxes without a color, set the default background color.
             for (int i = 0; i <= 9; i++) {
                 if (DIGITS_COLOR[i] == 0) {
-                    DIGITS_COLOR[i] = 0xff222222;
+                    DIGITS_COLOR[i] = TEXT_COLOR;
                 }
             }
-
 
             paintCircles.setColor(Color.CYAN);
             float faceRadius = (centerScreenX + centerScreenY) / 3.2f;
             float radius = faceRadius / 4;
+
             for (int i = 0; i < 10; i++) {
                 paintCircles.setColor(DIGITS_COLOR[i]);
                 paintText.setColor(DIGITS_COLOR[i]);
