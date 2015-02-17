@@ -43,8 +43,8 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
         public static final int SECOND_X0_COLOR = 0xff0000cc;
         public static final int SECOND_0X_COLOR = 0xff000077;
         public static final int TEXT_COLOR = 0xff222222;
+        public static final int DEFAULT_CIRCLE_BACKGROUND_COLOR = TEXT_COLOR;
         public static final int OUTER_CIRCLE_COLOR = 0xffbbbbbb;
-
 
         /**
          * Holds the current colors of each digit, used while calculating the color
@@ -155,7 +155,6 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
         public void onTimeTick() {
             super.onTimeTick();
             /* the time changed */
-
             invalidate();
         }
 
@@ -215,11 +214,11 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
             // For boxes without a color, set the default background color.
             for (int i = 0; i <= 9; i++) {
                 if (DIGITS_COLOR[i] == 0) {
-                    DIGITS_COLOR[i] = TEXT_COLOR;
+                    DIGITS_COLOR[i] = DEFAULT_CIRCLE_BACKGROUND_COLOR;
                 }
             }
 
-            paintCircles.setColor(Color.CYAN);
+            paintCircles.setColor(Color.BLACK);
             float faceRadius = (centerScreenX + centerScreenY) / 3.2f;
             float radius = faceRadius / 4;
 
