@@ -112,12 +112,12 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
             paintCircles.setAntiAlias(true);
             paintText.setAntiAlias(true);
-            paintText.setTextSize(46);
+            paintText.setTextSize(22);
 
             float mx[] = {
-                    -1.0f, 0.0f, 0.0f, 0.0f, 125.0f,
-                    0.0f, -1.0f, 0.0f, 0.0f, 125.0f,
-                    0.0f, 0.0f, -1.0f, 0.0f, 125.0f,
+                    -1.0f, -1.0f, -1.0f, 0.0f, 255.0f,
+                    -1.0f, -1.0f, -1.0f, 0.0f, 255.0f,
+                    -1.0f, -1.0f, -1.0f, 0.0f, 255.0f,
                     0.0f, 0.0f, 0.0f, 1.0f, 0.0f
             };
             ColorMatrix cm = new ColorMatrix(mx);
@@ -218,7 +218,7 @@ public class CCCWatchFaceService extends CanvasWatchFaceService {
 
 
             paintCircles.setColor(Color.CYAN);
-            float faceRadius = (centerScreenX + centerScreenY) / 2.8f;
+            float faceRadius = (centerScreenX + centerScreenY) / 3.2f;
             float radius = faceRadius / 4;
             for (int i = 0; i < 10; i++) {
                 paintCircles.setColor(DIGITS_COLOR[i]);
