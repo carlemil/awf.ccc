@@ -77,22 +77,41 @@ public class RGBWatchFaceService extends AbstractCCCWatchFaceService {
             int centerScreenY = (int) (height / 2f);
 
             int seconds = time.second;
+            int minutes = time.minute;
+            int hours = time.hour;
 
             paintCircles.setColor(Color.RED);
             int boxSize = 40;
             int boxDistance = (int) (boxSize * 0.2);
-            Rect rect = new Rect(0,0,boxSize,boxSize);
-            rect.offset(centerScreenX-boxSize/2, centerScreenY-boxSize/2);
-            rect.offset((int) ((boxSize+boxDistance)*2.5), 0);
+            Rect rect = new Rect(0, 0, boxSize, boxSize);
+            rect.offset(centerScreenX - boxSize / 2, centerScreenY - boxSize / 2);
+            rect.offset((int) ((boxSize + boxDistance) * 2.5), (int) (-(boxSize + boxDistance) * 1.5f));
 
             for (int i = 0; i < 6; i++) {
-                if (seconds%2==1) {
+                if (seconds % 2 == 1) {
                     canvas.drawRect(rect, paintCircles);
                 } else {
                     canvas.drawRect(rect, paintOuterCircles);
                 }
-                rect.offset(-(boxSize+boxDistance), 0);
+                rect.offset(0, boxSize + boxDistance);
+
+                if (minutes % 2 == 1) {
+                    canvas.drawRect(rect, paintCircles);
+                } else {
+                    canvas.drawRect(rect, paintOuterCircles);
+                }
+                rect.offset(0, boxSize + boxDistance);
+
+                if (hours % 2 == 1) {
+                    canvas.drawRect(rect, paintCircles);
+                } else {
+                    canvas.drawRect(rect, paintOuterCircles);
+                }
+
+                rect.offset(-(boxSize + boxDistance), -(boxSize + boxDistance) * 2);
                 seconds = seconds >> 1;
+                minutes = minutes >> 1;
+                hours = hours >> 1;
             }
 
             // TODO rita 3 rader som överlappar lite och blendar vid överlappningarna, mörkare för 0 och ljusare för 1.
