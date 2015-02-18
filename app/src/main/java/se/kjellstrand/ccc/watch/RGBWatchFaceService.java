@@ -2,8 +2,6 @@ package se.kjellstrand.ccc.watch;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.view.SurfaceHolder;
@@ -21,46 +19,22 @@ public class RGBWatchFaceService extends AbstractCCCWatchFaceService {
 
     private class Engine extends AbstractEngine {
 
-        public static final int HOUR_ON_COLOR = 0xffcc0000;
-        public static final int HOUR_OFF_COLOR = 0xff770000;
-        public static final int MINUTE_ON_COLOR = 0xff00cc00;
-        public static final int MINUTE_OFF_COLOR = 0xff007700;
-        public static final int SECOND_ON_COLOR = 0xff0000cc;
-        public static final int SECOND_OFF_COLOR = 0xff000077;
-        public static final int TEXT_COLOR = 0xff222222;
-        public static final int DEFAULT_CIRCLE_BACKGROUND_COLOR = TEXT_COLOR;
-        public static final int OUTER_CIRCLE_COLOR = 0xffbbbbbb;
-
-        /**
-         * Holds the current colors of each digit, used while calculating the color
-         * state of the clock in each update.
-         */
-        public final int[] DIGITS_COLOR = new int[10];
-
-        public Rect chrBounds = new Rect();
+        Paint son = new Paint();
+        Paint soff = new Paint();
+        Paint mon = new Paint();
+        Paint moff = new Paint();
+        Paint hon = new Paint();
+        Paint hoff = new Paint();
 
         @Override
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
-
-            paintCircles.setAntiAlias(true);
-            paintText.setAntiAlias(true);
-            paintText.setTextSize(22);
-
-            float mx[] = {
-                    -1.0f, -1.0f, -1.0f, 0.0f, 255.0f,
-                    -1.0f, -1.0f, -1.0f, 0.0f, 255.0f,
-                    -1.0f, -1.0f, -1.0f, 0.0f, 255.0f,
-                    0.0f, 0.0f, 0.0f, 1.0f, 0.0f
-            };
-            ColorMatrix cm = new ColorMatrix(mx);
-
-            paintText.setColorFilter(new ColorMatrixColorFilter(cm));
-
-            paintOuterCircles.setAntiAlias(true);
-            paintOuterCircles.setStrokeWidth(2.0f);
-            paintOuterCircles.setColor(OUTER_CIRCLE_COLOR);
-            paintOuterCircles.setStyle(Paint.Style.STROKE);
+            son.setColor(0xffff0000);
+            soff.setColor(0xff440000);
+            mon.setColor(0xff00ff00);
+            moff.setColor(0xff004400);
+            hon.setColor(0xff0000ff);
+            hoff.setColor(0xff000044);
         }
 
         @Override
@@ -81,31 +55,31 @@ public class RGBWatchFaceService extends AbstractCCCWatchFaceService {
             int hours = time.hour;
 
             paintCircles.setColor(Color.RED);
-            int boxSize = 40;
+            int boxSize = 36;
             int boxDistance = (int) (boxSize * 0.2);
             Rect rect = new Rect(0, 0, boxSize, boxSize);
             rect.offset(centerScreenX - boxSize / 2, centerScreenY - boxSize / 2);
-            rect.offset((int) ((boxSize + boxDistance) * 2.5), (int) (-(boxSize + boxDistance) * 1.5f));
+            rect.offset((int) ((boxSize + boxDistance) * 2.5), (int) (-(boxSize + boxDistance) * 1f));
 
             for (int i = 0; i < 6; i++) {
                 if (seconds % 2 == 1) {
-                    canvas.drawRect(rect, paintCircles);
+                    canvas.drawRect(rect, son);
                 } else {
-                    canvas.drawRect(rect, paintOuterCircles);
+                    canvas.drawRect(rect, soff);
                 }
                 rect.offset(0, boxSize + boxDistance);
 
                 if (minutes % 2 == 1) {
-                    canvas.drawRect(rect, paintCircles);
+                    canvas.drawRect(rect, mon);
                 } else {
-                    canvas.drawRect(rect, paintOuterCircles);
+                    canvas.drawRect(rect, moff);
                 }
                 rect.offset(0, boxSize + boxDistance);
 
                 if (hours % 2 == 1) {
-                    canvas.drawRect(rect, paintCircles);
+                    canvas.drawRect(rect, hon);
                 } else {
-                    canvas.drawRect(rect, paintOuterCircles);
+                    canvas.drawRect(rect, hoff);
                 }
 
                 rect.offset(-(boxSize + boxDistance), -(boxSize + boxDistance) * 2);
