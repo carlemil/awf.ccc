@@ -42,11 +42,6 @@ public class AbstractCCCWatchFaceService extends CanvasWatchFaceService {
 
         protected boolean registeredTimeZoneReceiver;
 
-        /**
-         * Defines how the colors will be blended.
-         */
-        protected int sBlendMode = R.string.screen_blend;
-
         protected Paint paintCircles = new Paint();
         protected Paint paintOuterCircles = new Paint();
         protected Paint paintText = new Paint();
@@ -77,7 +72,6 @@ public class AbstractCCCWatchFaceService extends CanvasWatchFaceService {
                 time.setToNow();
             }
         };
-        protected Rect chrBounds = new Rect();
 
         protected void updateTimer() {
             mUpdateTimeHandler.removeMessages(MSG_UPDATE_TIME);
@@ -250,29 +244,11 @@ public class AbstractCCCWatchFaceService extends CanvasWatchFaceService {
          * @return a blend of the two color, unless above stated condition applies.
          */
         public int setOrBlendDigitColorWithColor(int c1, int c2) {
-            switch (sBlendMode) {
-                case R.string.screen_blend:
-                    if (c1 != 0) {
-                        return ColorUtil.screenBlendTwoColors(c1, c2);
-                    } else {
-                        return c2;
-                    }
-
-                case R.string.multiply_blend:
-                    if (c1 != 0) {
-                        return ColorUtil.multiplyBlendTwoColors(c1, c2);
-                    } else {
-                        return c2;
-                    }
-
-                case R.string.average_blend:
-                    if (c1 != 0) {
-                        return ColorUtil.averageBlendTwoColors(c1, c2);
-                    } else {
-                        return c2;
-                    }
+            if (c1 != 0) {
+                return ColorUtil.screenBlendTwoColors(c1, c2);
+            } else {
+                return c2;
             }
-            return c1;
         }
 
         private void registerReceiver() {

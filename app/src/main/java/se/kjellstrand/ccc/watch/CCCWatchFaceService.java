@@ -61,7 +61,6 @@ public class CCCWatchFaceService extends AbstractCCCWatchFaceService {
             paintOuterCircles.setStrokeWidth(2.0f);
             paintOuterCircles.setColor(OUTER_CIRCLE_COLOR);
             paintOuterCircles.setStyle(Paint.Style.STROKE);
-
         }
 
         @Override
