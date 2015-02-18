@@ -79,11 +79,11 @@ public class RGBWatchFaceService extends AbstractCCCWatchFaceService {
             int seconds = time.second;
 
             paintCircles.setColor(Color.RED);
-            int size = 10;
-            Rect rect = new Rect(centerScreenX-size/2,
-                    centerScreenY-size/2,
-                    centerScreenX+size/2,
-                    centerScreenY+size/2);
+            int boxSize = 40;
+            int boxDistance = (int) (boxSize * 0.2);
+            Rect rect = new Rect(0,0,boxSize,boxSize);
+            rect.offset(centerScreenX-boxSize/2, centerScreenY-boxSize/2);
+            rect.offset((int) ((boxSize+boxDistance)*2.5), 0);
 
             for (int i = 0; i < 6; i++) {
                 if (seconds%2==1) {
@@ -91,9 +91,12 @@ public class RGBWatchFaceService extends AbstractCCCWatchFaceService {
                 } else {
                     canvas.drawRect(rect, paintOuterCircles);
                 }
-                rect.offset(-15, 0);
+                rect.offset(-(boxSize+boxDistance), 0);
                 seconds = seconds >> 1;
             }
+
+            // TODO rita 3 rader som överlappar lite och blendar vid överlappningarna, mörkare för 0 och ljusare för 1.
+
         }
     }
 
