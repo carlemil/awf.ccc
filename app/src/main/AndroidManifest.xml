@@ -12,7 +12,7 @@
 
         <service
             android:name=".CCCWatchFaceService"
-            android:label="@string/analog_name"
+            android:label="Decimal RGB"
             android:allowEmbedded="true"
             android:taskAffinity=""
             android:permission="android.permission.BIND_WALLPAPER" >
@@ -21,10 +21,10 @@
                 android:resource="@xml/watch_face" />
             <meta-data
                 android:name="com.google.android.wearable.watchface.preview"
-                android:resource="@drawable/preview_analog" />
+                android:resource="@drawable/preview_decimal_rgb" />
             <meta-data
                 android:name="com.google.android.wearable.watchface.preview_circular"
-                android:resource="@drawable/preview_analog_circular" />
+                android:resource="@drawable/preview_decimal_rgb_circular" />
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <category
