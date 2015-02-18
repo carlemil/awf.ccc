@@ -33,7 +33,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".RGBWatchFaceService"
+            android:name=".DigitalRGBWatchFaceService"
             android:label="RGB"
             android:allowEmbedded="true"
             android:taskAffinity=""
