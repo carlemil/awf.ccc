@@ -102,18 +102,16 @@ public class DigitalRGBWatchFaceService extends AbstractCCCWatchFaceService {
             p[6] = rect.left;
             p[7] = rect.top;
 
-            // TODO loopa över p, för varje par centrera coords och distorta med sin cos
-
-            for (int i=0;i<4;i++) {
-                p[i*2] += Math.cos((centerScreenY - p[i*2+1])/50f)*20f;
-                p[i*2+1] += Math.cos((centerScreenX - p[i*2])/50f)*20f;
+            for (int i = 0; i < 4; i++) {
+                p[i * 2] += Math.sin((centerScreenY - p[i * 2 + 1]) / 30f) * 20f;
+                p[i * 2 + 1] += Math.sin((centerScreenX - p[i * 2]) / 30f) * 20f;
             }
 
-            Path transformed=new Path();
-            transformed.rMoveTo(p[0],p[1]);
-            transformed.rLineTo(p[2]-p[0],p[3]-p[1]);
-            transformed.rLineTo(p[4]-p[2],p[5]-p[3]);
-            transformed.rLineTo(p[6]-p[4],p[7]-p[5]);
+            Path transformed = new Path();
+            transformed.rMoveTo(p[0], p[1]);
+            transformed.rLineTo(p[2] - p[0], p[3] - p[1]);
+            transformed.rLineTo(p[4] - p[2], p[5] - p[3]);
+            transformed.rLineTo(p[6] - p[4], p[7] - p[5]);
             transformed.close();
 
             return transformed;
