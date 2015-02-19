@@ -99,7 +99,7 @@ public class AbstractCCCWatchFaceService extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
-            canvas.drawColor(Color.CYAN);
+            canvas.drawColor(Color.BLACK);
 
             /* draw your watch face */
             // Update the time

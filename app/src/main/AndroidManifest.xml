@@ -43,10 +43,10 @@
                 android:resource="@xml/watch_face" />
             <meta-data
                 android:name="com.google.android.wearable.watchface.preview"
-                android:resource="@drawable/preview_decimal_rgb" />
+                android:resource="@drawable/preview_binary_rgb" />
             <meta-data
                 android:name="com.google.android.wearable.watchface.preview_circular"
-                android:resource="@drawable/preview_decimal_rgb_circular" />
+                android:resource="@drawable/preview_binary_rgb_circular" />
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
                 <category

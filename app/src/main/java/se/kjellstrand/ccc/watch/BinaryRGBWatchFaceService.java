@@ -31,11 +31,11 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
         @Override
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
-            son.setColor(0xffff0000);
+            son.setColor(0xffcc0000);
             soff.setColor(0xff440000);
-            mon.setColor(0xff00ff00);
+            mon.setColor(0xff00cc00);
             moff.setColor(0xff004400);
-            hon.setColor(0xff0000ff);
+            hon.setColor(0xff0000cc);
             hoff.setColor(0xff000044);
 
             son.setAntiAlias(true);
@@ -108,9 +108,6 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
             int width = bounds.width();
             int height = bounds.height();
 
-            // Find the center. Ignore the window insets so that, on round watches
-            // with a "chin", the watch face is centered on the entire screen, not
-            // just the usable portion.
             int centerScreenX = (int) (width / 2f);
             int centerScreenY = (int) (height / 2f);
 
