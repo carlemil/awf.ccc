@@ -4,6 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 /**
@@ -35,6 +36,30 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
             moff.setColor(0xff004400);
             hon.setColor(0xff0000ff);
             hoff.setColor(0xff000044);
+
+            son.setAntiAlias(true);
+            soff.setAntiAlias(true);
+            mon.setAntiAlias(true);
+            moff.setAntiAlias(true);
+            hon.setAntiAlias(true);
+            hoff.setAntiAlias(true);
+        }
+
+
+        @Override
+        public void onAmbientModeChanged(boolean inAmbientMode) {
+            super.onAmbientModeChanged(inAmbientMode);
+            /* the wearable switched between modes */
+
+            if (lowBitAmbient) {
+                boolean antiAlias = !inAmbientMode;
+                son.setAntiAlias(antiAlias);
+                soff.setAntiAlias(antiAlias);
+                mon.setAntiAlias(antiAlias);
+                moff.setAntiAlias(antiAlias);
+                hon.setAntiAlias(antiAlias);
+                hoff.setAntiAlias(antiAlias);
+            }
         }
 
         @Override
@@ -54,11 +79,12 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
             int minutes = time.minute;
             int hours = time.hour;
 
-            int boxSize = 36;
+            int boxSize = 32;
             int boxDistance = (int) (boxSize * 0.15);
             Rect rect = new Rect(0, 0, boxSize, boxSize);
             rect.offset(centerScreenX - boxSize / 2, centerScreenY - boxSize / 2);
             rect.offset((int) ((boxSize + boxDistance) * 2.5), (int) (-(boxSize + boxDistance) * 1f));
+            Log.d("TAG", "------    +++++++       ------            ----");
 
             for (int i = 0; i < 6; i++) {
                 if (seconds % 2 == 1) {
@@ -101,10 +127,16 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
             p[5] = rect.bottom;
             p[6] = rect.left;
             p[7] = rect.top;
-
+            Log.d("TAG", "----------------");
             for (int i = 0; i < 4; i++) {
-                p[i * 2] += Math.sin((centerScreenY - p[i * 2 + 1]) / 30f) * 20f;
-                p[i * 2 + 1] += Math.sin((centerScreenX - p[i * 2]) / 30f) * 20f;
+                int x = centerScreenX - p[i * 2];
+                int y = centerScreenY - p[i * 2 + 1];
+                double dx = Math.sin(y / 80d + Math.PI / 2d * 3d) * x / 3d;
+                p[i * 2] += dx;
+                double dy = Math.sin(x / 80d + Math.PI / 2d * 3d) * y / 1.5d;
+                p[i * 2 + 1] += dy;
+
+                Log.d("TAG", "x " + x + " y " + y + " dx " + dx + " dy " + dy);
             }
 
             Path transformed = new Path();

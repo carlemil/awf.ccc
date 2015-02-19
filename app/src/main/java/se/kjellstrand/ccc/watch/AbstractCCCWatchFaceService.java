@@ -42,10 +42,6 @@ public class AbstractCCCWatchFaceService extends CanvasWatchFaceService {
 
         protected boolean registeredTimeZoneReceiver;
 
-        protected Paint paintCircles = new Paint();
-        protected Paint paintOuterCircles = new Paint();
-        protected Paint paintText = new Paint();
-
         /* handler to update the time once a second in interactive mode */
         protected final Handler mUpdateTimeHandler = new Handler() {
             @Override
@@ -103,7 +99,7 @@ public class AbstractCCCWatchFaceService extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
-            canvas.drawColor(Color.BLACK);
+            canvas.drawColor(Color.CYAN);
 
             /* draw your watch face */
             // Update the time
@@ -131,12 +127,6 @@ public class AbstractCCCWatchFaceService extends CanvasWatchFaceService {
             super.onAmbientModeChanged(inAmbientMode);
             /* the wearable switched between modes */
 
-            if (lowBitAmbient) {
-                boolean antiAlias = !inAmbientMode;
-                paintCircles.setAntiAlias(antiAlias);
-                paintText.setAntiAlias(antiAlias);
-                paintOuterCircles.setAntiAlias(antiAlias);
-            }
             invalidate();
             updateTimer();
         }

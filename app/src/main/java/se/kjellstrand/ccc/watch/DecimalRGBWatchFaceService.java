@@ -31,6 +31,10 @@ public class DecimalRGBWatchFaceService extends AbstractCCCWatchFaceService {
         public static final int DEFAULT_CIRCLE_BACKGROUND_COLOR = TEXT_COLOR;
         public static final int OUTER_CIRCLE_COLOR = 0xffbbbbbb;
 
+        protected Paint paintCircles = new Paint();
+        protected Paint paintOuterCircles = new Paint();
+        protected Paint paintText = new Paint();
+
         /**
          * Holds the current colors of each digit, used while calculating the color
          * state of the clock in each update.
@@ -61,6 +65,20 @@ public class DecimalRGBWatchFaceService extends AbstractCCCWatchFaceService {
             paintOuterCircles.setStrokeWidth(2.0f);
             paintOuterCircles.setColor(OUTER_CIRCLE_COLOR);
             paintOuterCircles.setStyle(Paint.Style.STROKE);
+        }
+
+
+        @Override
+        public void onAmbientModeChanged(boolean inAmbientMode) {
+            super.onAmbientModeChanged(inAmbientMode);
+            /* the wearable switched between modes */
+
+            if (lowBitAmbient) {
+                boolean antiAlias = !inAmbientMode;
+                paintCircles.setAntiAlias(antiAlias);
+                paintText.setAntiAlias(antiAlias);
+                paintOuterCircles.setAntiAlias(antiAlias);
+            }
         }
 
         @Override
