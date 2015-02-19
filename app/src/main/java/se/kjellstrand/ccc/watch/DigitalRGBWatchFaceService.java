@@ -63,23 +63,23 @@ public class DigitalRGBWatchFaceService extends AbstractCCCWatchFaceService {
             for (int i = 0; i < 6; i++) {
                 if (seconds % 2 == 1) {
                     //canvas.drawRect(rect, son);
-                    canvas.drawPath(transform(rect), son);
+                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), son);
                 } else {
-                    canvas.drawPath(transform(rect), soff);
+                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), soff);
                 }
                 rect.offset(0, boxSize + boxDistance);
 
                 if (minutes % 2 == 1) {
-                    canvas.drawRect(rect, mon);
+                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), mon);
                 } else {
-                    canvas.drawRect(rect, moff);
+                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), moff);
                 }
                 rect.offset(0, boxSize + boxDistance);
 
                 if (hours % 2 == 1) {
-                    canvas.drawRect(rect, hon);
+                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), hon);
                 } else {
-                    canvas.drawRect(rect, hoff);
+                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), hoff);
                 }
 
                 rect.offset(-(boxSize + boxDistance), -(boxSize + boxDistance) * 2);
@@ -92,7 +92,7 @@ public class DigitalRGBWatchFaceService extends AbstractCCCWatchFaceService {
 
         int[] p = new int[8];
 
-        private Path transform(Rect rect) {
+        private Path transform(Rect rect, int centerScreenX, int centerScreenY) {
             p[0] = rect.right;
             p[1] = rect.top;
             p[2] = rect.right;
@@ -103,6 +103,11 @@ public class DigitalRGBWatchFaceService extends AbstractCCCWatchFaceService {
             p[7] = rect.top;
 
             // TODO loopa över p, för varje par centrera coords och distorta med sin cos
+
+            for (int i=0;i<4;i++) {
+                p[i*2] += Math.cos((centerScreenY - p[i*2+1])/50f)*20f;
+                p[i*2+1] += Math.cos((centerScreenX - p[i*2])/50f)*20f;
+            }
 
             Path transformed=new Path();
             transformed.rMoveTo(p[0],p[1]);
