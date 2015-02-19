@@ -2,6 +2,7 @@ package se.kjellstrand.ccc.watch;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
 import android.view.SurfaceHolder;
 
@@ -61,9 +62,10 @@ public class DigitalRGBWatchFaceService extends AbstractCCCWatchFaceService {
 
             for (int i = 0; i < 6; i++) {
                 if (seconds % 2 == 1) {
-                    canvas.drawRect(rect, son);
+                    //canvas.drawRect(rect, son);
+                    canvas.drawPath(transform(rect), son);
                 } else {
-                    canvas.drawRect(rect, soff);
+                    canvas.drawPath(transform(rect), soff);
                 }
                 rect.offset(0, boxSize + boxDistance);
 
@@ -86,8 +88,30 @@ public class DigitalRGBWatchFaceService extends AbstractCCCWatchFaceService {
                 hours = hours >> 1;
             }
 
-            // TODO rita 3 rader som överlappar lite och blendar vid överlappningarna, mörkare för 0 och ljusare för 1.
+        }
 
+        int[] p = new int[8];
+
+        private Path transform(Rect rect) {
+            p[0] = rect.right;
+            p[1] = rect.top;
+            p[2] = rect.right;
+            p[3] = rect.bottom;
+            p[4] = rect.left;
+            p[5] = rect.bottom;
+            p[6] = rect.left;
+            p[7] = rect.top;
+
+            // TODO loopa över p, för varje par centrera coords och distorta med sin cos
+
+            Path transformed=new Path();
+            transformed.rMoveTo(p[0],p[1]);
+            transformed.rLineTo(p[2]-p[0],p[3]-p[1]);
+            transformed.rLineTo(p[4]-p[2],p[5]-p[3]);
+            transformed.rLineTo(p[6]-p[4],p[7]-p[5]);
+            transformed.close();
+
+            return transformed;
         }
     }
 
