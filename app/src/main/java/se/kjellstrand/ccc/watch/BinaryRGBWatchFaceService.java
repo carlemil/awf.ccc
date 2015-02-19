@@ -4,7 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 /**
@@ -26,6 +25,8 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
         Paint moff = new Paint();
         Paint hon = new Paint();
         Paint hoff = new Paint();
+
+        Path[][] paths = null;
 
         @Override
         public void onCreate(SurfaceHolder holder) {
@@ -66,6 +67,44 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             super.onDraw(canvas, bounds);
 
+            if( paths ==null){
+                setupPaths(bounds);
+            }
+
+            int seconds = time.second;
+            int minutes = time.minute;
+            int hours = time.hour;
+
+            for (int i = 0; i < 6; i++) {
+                if (seconds % 2 == 1) {
+                    //canvas.drawRect(rect, son);
+                    canvas.drawPath(paths[0][i], son);
+                } else {
+                    canvas.drawPath(paths[0][i], soff);
+                }
+
+                if (minutes % 2 == 1) {
+                    canvas.drawPath(paths[1][i], mon);
+                } else {
+                    canvas.drawPath(paths[1][i], moff);
+                }
+
+                if (hours % 2 == 1) {
+                    canvas.drawPath(paths[2][i], hon);
+                } else {
+                    canvas.drawPath(paths[2][i], hoff);
+                }
+
+                seconds = seconds >> 1;
+                minutes = minutes >> 1;
+                hours = hours >> 1;
+            }
+
+        }
+
+        private void setupPaths(Rect bounds) {
+            paths = new Path[3][6];
+
             int width = bounds.width();
             int height = bounds.height();
 
@@ -75,50 +114,25 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
             int centerScreenX = (int) (width / 2f);
             int centerScreenY = (int) (height / 2f);
 
-            int seconds = time.second;
-            int minutes = time.minute;
-            int hours = time.hour;
-
             int boxSize = 32;
             int boxDistance = (int) (boxSize * 0.15);
             Rect rect = new Rect(0, 0, boxSize, boxSize);
             rect.offset(centerScreenX - boxSize / 2, centerScreenY - boxSize / 2);
             rect.offset((int) ((boxSize + boxDistance) * 2.5), (int) (-(boxSize + boxDistance) * 1f));
-            Log.d("TAG", "------    +++++++       ------            ----");
 
             for (int i = 0; i < 6; i++) {
-                if (seconds % 2 == 1) {
-                    //canvas.drawRect(rect, son);
-                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), son);
-                } else {
-                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), soff);
-                }
+                paths[0][i] = transformRectToPath(rect, centerScreenX, centerScreenY);
                 rect.offset(0, boxSize + boxDistance);
-
-                if (minutes % 2 == 1) {
-                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), mon);
-                } else {
-                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), moff);
-                }
+                paths[1][i] = transformRectToPath(rect, centerScreenX, centerScreenY);
                 rect.offset(0, boxSize + boxDistance);
-
-                if (hours % 2 == 1) {
-                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), hon);
-                } else {
-                    canvas.drawPath(transform(rect, centerScreenX, centerScreenY), hoff);
-                }
-
+                paths[2][i] = transformRectToPath(rect, centerScreenX, centerScreenY);
                 rect.offset(-(boxSize + boxDistance), -(boxSize + boxDistance) * 2);
-                seconds = seconds >> 1;
-                minutes = minutes >> 1;
-                hours = hours >> 1;
             }
-
         }
 
-        int[] p = new int[8];
+        private Path transformRectToPath(Rect rect, int centerScreenX, int centerScreenY) {
+            int[] p = new int[8];
 
-        private Path transform(Rect rect, int centerScreenX, int centerScreenY) {
             p[0] = rect.right;
             p[1] = rect.top;
             p[2] = rect.right;
@@ -127,7 +141,7 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
             p[5] = rect.bottom;
             p[6] = rect.left;
             p[7] = rect.top;
-            Log.d("TAG", "----------------");
+
             for (int i = 0; i < 4; i++) {
                 int x = centerScreenX - p[i * 2];
                 int y = centerScreenY - p[i * 2 + 1];
@@ -135,8 +149,6 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
                 p[i * 2] += dx;
                 double dy = Math.sin(x / 80d + Math.PI / 2d * 3d) * y / 1.5d;
                 p[i * 2 + 1] += dy;
-
-                Log.d("TAG", "x " + x + " y " + y + " dx " + dx + " dy " + dy);
             }
 
             Path transformed = new Path();
@@ -148,6 +160,8 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
 
             return transformed;
         }
+
+
     }
 
 }
