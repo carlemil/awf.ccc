@@ -67,7 +67,7 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             super.onDraw(canvas, bounds);
 
-            if( paths ==null){
+            if (paths == null) {
                 setupPaths(bounds);
             }
 
@@ -111,7 +111,7 @@ public class BinaryRGBWatchFaceService extends AbstractCCCWatchFaceService {
             int centerScreenX = (int) (width / 2f);
             int centerScreenY = (int) (height / 2f);
 
-            int boxSize = 32;
+            int boxSize = width / 10;
             int boxDistance = (int) (boxSize * 0.15);
             Rect rect = new Rect(0, 0, boxSize, boxSize);
             rect.offset(centerScreenX - boxSize / 2, centerScreenY - boxSize / 2);
